@@ -57,5 +57,56 @@ subway_df %>%
   distinct
 ```
 
+## Probelm 2
+```{r}
+mr_trash_df =  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 1) %>% 
+  janitor::clean_names() %>% 
+  select(dumpster:homes_powered) %>% 
+  drop_na() %>% 
+  mutate(dumpster = as.character(dumpster)) %>% 
+  mutate(weight_tons = round(weight_tons, digit = 0)) %>% 
+  mutate(weight_tons = as.integer(weight_tons)) %>% 
+  mutate(id = "Mr.Trash Wheel")  
+
+prof_trash_df =  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 2) %>% 
+  janitor::clean_names() %>% 
+  select(dumpster:homes_powered) %>% 
+  drop_na() %>% 
+  mutate(dumpster = as.character(dumpster)) %>% 
+  mutate(weight_tons = round(weight_tons, digit = 0)) %>% 
+  mutate(weight_tons = as.integer(weight_tons)) %>% 
+  mutate(id = "Professor Trash Wheel") 
+```
+
+```{r}
+trash_df = full_join(mr_trash_df, prof_trash_df, by = "id")
+```
+
+```{r}
+summary(mr_trash_df)
+summary(prof_trash_df)
+mr_trash_df[1,]
+prof_trash_df[1,]
+```
+
+```{r}
+prof_trash_df %>% 
+  select(weight_tons) %>% 
+  mutate(weight_tons_total = sum(weight_tons))
+  sum(prof_trash_df$weight_tons)
+
+mr_trash_df %>% 
+  select(year, sports_balls) %>% 
+  filter(year == "2020") %>% 
+  mutate(sports_balls_2020_total = sum(sports_balls)) 
+```
+
+There are 453 observations in "Mr Trash Wheel" table and 71 observations in "Professor Wheel" table. Each table contains variables of dumpter number (`dumpster`), date of collection (`date`), amount of total litter(`weight_tons` & `volume_cubic_yards`) and different litter types (such as `plastic bottles`, `cigarette butts`, `sport balls`, and etc.) The total weight of trash collected by Professor Trash Wheel was 140 tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was 856. 
+
+
+
+
+
+
 
 

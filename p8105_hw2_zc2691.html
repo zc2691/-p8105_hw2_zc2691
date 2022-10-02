@@ -469,6 +469,166 @@ library(dplyr)</code></pre>
 ## 15 Fulton           Euclid Av                    
 ## 16 Fulton           Franklin Av                  
 ## 17 Rockaway         Howard Beach</code></pre>
+<div id="probelm-2" class="section level2">
+<h2>Probelm 2</h2>
+<pre class="r"><code>mr_trash_df =  read_excel(&quot;data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx&quot;, sheet = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(dumpster:homes_powered) %&gt;% 
+  drop_na() %&gt;% 
+  mutate(dumpster = as.character(dumpster)) %&gt;% 
+  mutate(weight_tons = round(weight_tons, digit = 0)) %&gt;% 
+  mutate(weight_tons = as.integer(weight_tons)) %&gt;% 
+  mutate(id = &quot;Mr.Trash Wheel&quot;)  </code></pre>
+<pre><code>## New names:
+## • `` -&gt; `...15`
+## • `` -&gt; `...16`
+## • `` -&gt; `...17`</code></pre>
+<pre class="r"><code>prof_trash_df =  read_excel(&quot;data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx&quot;, sheet = 2) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(dumpster:homes_powered) %&gt;% 
+  drop_na() %&gt;% 
+  mutate(dumpster = as.character(dumpster)) %&gt;% 
+  mutate(weight_tons = round(weight_tons, digit = 0)) %&gt;% 
+  mutate(weight_tons = as.integer(weight_tons)) %&gt;% 
+  mutate(id = &quot;Professor Trash Wheel&quot;) </code></pre>
+<pre class="r"><code>trash_df = full_join(mr_trash_df, prof_trash_df, by = &quot;id&quot;)</code></pre>
+<pre class="r"><code>summary(mr_trash_df)</code></pre>
+<pre><code>##    dumpster            month                year     
+##  Length:453         Length:453         Min.   :2014  
+##  Class :character   Class :character   1st Qu.:2015  
+##  Mode  :character   Mode  :character   Median :2018  
+##                                        Mean   :2017  
+##                                        3rd Qu.:2019  
+##                                        Max.   :2021  
+##       date                         weight_tons    volume_cubic_yards
+##  Min.   :1900-01-20 00:00:00.00   Min.   :1.000   Min.   : 7.00     
+##  1st Qu.:2015-12-26 00:00:00.00   1st Qu.:3.000   1st Qu.:15.00     
+##  Median :2018-02-05 00:00:00.00   Median :3.000   Median :15.00     
+##  Mean   :2017-07-03 05:36:57.22   Mean   :3.177   Mean   :15.41     
+##  3rd Qu.:2019-05-28 00:00:00.00   3rd Qu.:4.000   3rd Qu.:15.00     
+##  Max.   :2021-01-04 00:00:00.00   Max.   :6.000   Max.   :20.00     
+##  plastic_bottles  polystyrene   cigarette_butts  glass_bottles   
+##  Min.   : 210    Min.   : 210   Min.   :   980   Min.   :  0.00  
+##  1st Qu.: 980    1st Qu.: 950   1st Qu.:  5000   1st Qu.:  9.00  
+##  Median :1850    Median :1650   Median : 11000   Median : 18.00  
+##  Mean   :1899    Mean   :1921   Mean   : 24522   Mean   : 22.45  
+##  3rd Qu.:2640    3rd Qu.:2730   3rd Qu.: 32000   3rd Qu.: 32.00  
+##  Max.   :5960    Max.   :6540   Max.   :310000   Max.   :110.00  
+##   grocery_bags    chip_bags     sports_balls   homes_powered  
+##  Min.   :  50   Min.   : 180   Min.   : 0.00   Min.   : 0.00  
+##  1st Qu.: 425   1st Qu.: 800   1st Qu.: 5.20   1st Qu.:38.83  
+##  Median : 820   Median :1327   Median : 9.00   Median :51.17  
+##  Mean   :1104   Mean   :1558   Mean   :11.75   Mean   :45.32  
+##  3rd Qu.:1620   3rd Qu.:2150   3rd Qu.:16.00   3rd Qu.:58.67  
+##  Max.   :3750   Max.   :5085   Max.   :56.00   Max.   :93.67  
+##       id           
+##  Length:453        
+##  Class :character  
+##  Mode  :character  
+##                    
+##                    
+## </code></pre>
+<pre class="r"><code>summary(prof_trash_df)</code></pre>
+<pre><code>##    dumpster            month                year     
+##  Length:71          Length:71          Min.   :2017  
+##  Class :character   Class :character   1st Qu.:2018  
+##  Mode  :character   Mode  :character   Median :2018  
+##                                        Mean   :2018  
+##                                        3rd Qu.:2019  
+##                                        Max.   :2021  
+##       date                         weight_tons    volume_cubic_yards
+##  Min.   :2017-01-02 00:00:00.00   Min.   :1.000   Min.   : 6.00     
+##  1st Qu.:2017-12-16 12:00:00.00   1st Qu.:2.000   1st Qu.:15.00     
+##  Median :2018-09-01 00:00:00.00   Median :2.000   Median :15.00     
+##  Mean   :2018-10-26 15:32:57.46   Mean   :1.972   Mean   :14.59     
+##  3rd Qu.:2019-08-13 00:00:00.00   3rd Qu.:2.000   3rd Qu.:15.00     
+##  Max.   :2021-01-04 00:00:00.00   Max.   :4.000   Max.   :18.00     
+##  plastic_bottles  polystyrene    cigarette_butts glass_bottles  
+##  Min.   : 657    Min.   : 1030   Min.   : 6000   Min.   : 0.00  
+##  1st Qu.:3900    1st Qu.: 3675   1st Qu.: 8750   1st Qu.: 4.00  
+##  Median :6000    Median : 5500   Median :12400   Median :11.00  
+##  Mean   :5715    Mean   : 5900   Mean   :14167   Mean   :11.86  
+##  3rd Qu.:7980    3rd Qu.: 8330   3rd Qu.:18000   3rd Qu.:18.00  
+##  Max.   :9830    Max.   :11528   Max.   :33320   Max.   :32.00  
+##   grocery_bags     chip_bags      sports_balls homes_powered  
+##  Min.   :  540   Min.   : 2900   Min.   :0.0   Min.   :10.17  
+##  1st Qu.:  945   1st Qu.: 5346   1st Qu.:0.0   1st Qu.:26.25  
+##  Median : 1300   Median : 7800   Median :0.0   Median :30.17  
+##  Mean   : 3246   Mean   : 9128   Mean   :0.2   Mean   :31.81  
+##  3rd Qu.: 3950   3rd Qu.:12990   3rd Qu.:0.0   3rd Qu.:39.25  
+##  Max.   :13450   Max.   :20100   Max.   :7.2   Max.   :62.00  
+##       id           
+##  Length:71         
+##  Class :character  
+##  Mode  :character  
+##                    
+##                    
+## </code></pre>
+<pre class="r"><code>mr_trash_df[1,]</code></pre>
+<pre><code>## # A tibble: 1 × 15
+##   dumpster month  year date                weight_tons volume_…¹ plast…² polys…³
+##   &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt; &lt;dttm&gt;                    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 1        May    2014 2014-05-16 00:00:00           4        18    1450    1820
+## # … with 7 more variables: cigarette_butts &lt;dbl&gt;, glass_bottles &lt;dbl&gt;,
+## #   grocery_bags &lt;dbl&gt;, chip_bags &lt;dbl&gt;, sports_balls &lt;dbl&gt;,
+## #   homes_powered &lt;dbl&gt;, id &lt;chr&gt;, and abbreviated variable names
+## #   ¹​volume_cubic_yards, ²​plastic_bottles, ³​polystyrene</code></pre>
+<pre class="r"><code>prof_trash_df[1,]</code></pre>
+<pre><code>## # A tibble: 1 × 15
+##   dumpster month    year date                weight_tons volum…¹ plast…² polys…³
+##   &lt;chr&gt;    &lt;chr&gt;   &lt;dbl&gt; &lt;dttm&gt;                    &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 1        January  2017 2017-01-02 00:00:00           2      15    1950    6080
+## # … with 7 more variables: cigarette_butts &lt;dbl&gt;, glass_bottles &lt;dbl&gt;,
+## #   grocery_bags &lt;dbl&gt;, chip_bags &lt;dbl&gt;, sports_balls &lt;dbl&gt;,
+## #   homes_powered &lt;dbl&gt;, id &lt;chr&gt;, and abbreviated variable names
+## #   ¹​volume_cubic_yards, ²​plastic_bottles, ³​polystyrene</code></pre>
+<pre class="r"><code>prof_trash_df %&gt;% 
+  select(weight_tons) %&gt;% 
+  mutate(weight_tons_total = sum(weight_tons))</code></pre>
+<pre><code>## # A tibble: 71 × 2
+##    weight_tons weight_tons_total
+##          &lt;int&gt;             &lt;int&gt;
+##  1           2               140
+##  2           2               140
+##  3           2               140
+##  4           4               140
+##  5           1               140
+##  6           2               140
+##  7           2               140
+##  8           2               140
+##  9           3               140
+## 10           3               140
+## # … with 61 more rows</code></pre>
+<pre class="r"><code>  sum(prof_trash_df$weight_tons)</code></pre>
+<pre><code>## [1] 140</code></pre>
+<pre class="r"><code>mr_trash_df %&gt;% 
+  select(year, sports_balls) %&gt;% 
+  filter(year == &quot;2020&quot;) %&gt;% 
+  mutate(sports_balls_2020_total = sum(sports_balls)) </code></pre>
+<pre><code>## # A tibble: 72 × 3
+##     year sports_balls sports_balls_2020_total
+##    &lt;dbl&gt;        &lt;dbl&gt;                   &lt;dbl&gt;
+##  1  2020           16                     856
+##  2  2020           12                     856
+##  3  2020            8                     856
+##  4  2020            6                     856
+##  5  2020           14                     856
+##  6  2020            2                     856
+##  7  2020            6                     856
+##  8  2020           14                     856
+##  9  2020           10                     856
+## 10  2020            9                     856
+## # … with 62 more rows</code></pre>
+<p>There are 453 observations in “Mr Trash Wheel” table and 71
+observations in “Professor Wheel” table. Each table contains variables
+of dumpter number (<code>dumpster</code>), date of collection
+(<code>date</code>), amount of total litter(<code>weight_tons</code>
+&amp; <code>volume_cubic_yards</code>) and different litter types (such
+as <code>plastic bottles</code>, <code>cigarette butts</code>,
+<code>sport balls</code>, and etc.) The total weight of trash collected
+by Professor Trash Wheel was 140 tons. The total number of sports balls
+collected by Mr. Trash Wheel in 2020 was 856.</p>
+</div>
 
 
 
