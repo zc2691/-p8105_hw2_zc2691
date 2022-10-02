@@ -1,0 +1,61 @@
+---
+title: "p8105_hw2_zc2691"
+output: html_document
+date: "2022-10-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r }
+library(tidyverse)
+library(readxl)
+library(dplyr)
+```
+
+```{r}
+subway_df = read_csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
+                     col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c")) %>%
+  janitor::clean_names() %>% 
+  select(line:route11, entry:vending, ada, entrance_type) %>% 
+  mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
+```
+
+```{r}
+subway_df %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+```{r}
+subway_df %>% 
+  filter(ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+```{r}
+subway_df %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "routenum",
+    values_to = "route") %>% 
+  filter(route == "A") %>% 
+  select (line, station_name) %>% 
+  distinct
+```
+
+```{r}
+subway_df %>% 
+  pivot_longer(
+    route1:route11,
+    names_to = "routenum",
+    values_to = "route") %>% 
+  filter(route == "A", ada == TRUE) %>% 
+  select (line, station_name) %>% 
+  distinct
+```
+
+
+
