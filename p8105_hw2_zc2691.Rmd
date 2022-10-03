@@ -106,7 +106,7 @@ mr_trash_df %>%
   mutate(sports_balls_2020_total = sum(sports_balls)) 
 ```
 
-There are 453 observations in "Mr Trash Wheel" table and 71 observations in "Professor Wheel" table. Each table contains variables of dumpter number (`dumpster`), date of collection (`date`), amount of total litter(`weight_tons` & `volume_cubic_yards`) and different litter types (such as `plastic bottles`, `cigarette butts`, `sport balls`, and etc.) The total weight of trash collected by Professor Trash Wheel was 140 tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was 856. 
+There are 453 observations in *mr_trash_df* dataset and 71 observations in *prof_trash_df* dataset Each table contains variables of dumpter number (`dumpster`), date of collection (`date`), amount of total litter(`weight_tons` & `volume_cubic_yards`) and different litter types (such as `plastic bottles`, `cigarette butts`, `sport balls`, and etc.) The total weight of trash collected by Professor Trash Wheel was 140 tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was 856. 
 
 ## Problem 3
 ```{r}
