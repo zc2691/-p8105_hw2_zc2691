@@ -186,8 +186,3 @@ The resulting dataset *pols_mon_snp_unemp* contains 816 observations of 11 varia
 
 
 
-Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
-
-
-
-
