@@ -20,6 +20,7 @@ subway_df = read_csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
   janitor::clean_names() %>% 
   select(line:route11, entry:vending, ada, entrance_type) %>% 
   mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
+subway_df
 ```
 
 ```{r}
@@ -66,7 +67,9 @@ mr_trash_df =  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sh
   mutate(dumpster = as.character(dumpster)) %>% 
   mutate(weight_tons = round(weight_tons, digit = 0)) %>% 
   mutate(weight_tons = as.integer(weight_tons)) %>% 
-  mutate(id = "Mr.Trash Wheel")  
+  mutate(id = "Mr.Trash Wheel") %>% 
+  select(id, dumpster:homes_powered)
+mr_trash_df
 
 prof_trash_df =  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 2) %>% 
   janitor::clean_names() %>% 
@@ -75,11 +78,13 @@ prof_trash_df =  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", 
   mutate(dumpster = as.character(dumpster)) %>% 
   mutate(weight_tons = round(weight_tons, digit = 0)) %>% 
   mutate(weight_tons = as.integer(weight_tons)) %>% 
-  mutate(id = "Professor Trash Wheel") 
+  mutate(id = "Professor Trash Wheel") %>% 
+  select(id, dumpster:homes_powered)
+prof_trash_df
 ```
 
 ```{r}
-trash_df = full_join(mr_trash_df, prof_trash_df, by = "id")
+trash_df = full_join(mr_trash_df, prof_trash_df)
 ```
 
 ```{r}
@@ -103,9 +108,85 @@ mr_trash_df %>%
 
 There are 453 observations in "Mr Trash Wheel" table and 71 observations in "Professor Wheel" table. Each table contains variables of dumpter number (`dumpster`), date of collection (`date`), amount of total litter(`weight_tons` & `volume_cubic_yards`) and different litter types (such as `plastic bottles`, `cigarette butts`, `sport balls`, and etc.) The total weight of trash collected by Professor Trash Wheel was 140 tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was 856. 
 
+## Problem 3
+```{r}
+pols_mon_raw = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(mon, c("year", "month", "day")) %>% 
+  mutate(month = as.numeric(month)) %>% 
+  mutate(month = month.name[month]) %>% 
+  mutate(prez_gop = replace(prez_gop, prez_gop == 1, "gop")) %>%
+  mutate(prez_gop = replace(prez_gop, prez_gop == 0, "dem")) %>%
+  mutate(prez_dem = replace(prez_dem, prez_dem == 1, "dem")) %>%
+  mutate(prez_dem = replace(prez_gop, prez_gop == 0, "gop")) %>%
+  pivot_longer(
+    c(prez_dem, prez_gop),
+    names_to = "party",
+    values_to = "president") %>% 
+  select(year,month, president, gov_gop:rep_gop, gov_dem:rep_dem)
+  
+rows = nrow(pols_mon_raw)
+odd_rows = seq_len(rows) %% 2
+pols_mon = pols_mon_raw[odd_rows == 1, ]
+pols_mon
+
+  
+snp = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(date = as.Date(date, format = "%m/%d/%y")) %>% 
+  separate(date, c("year", "month", "day")) %>% 
+  mutate(month = as.numeric(month)) %>% 
+  mutate(month = month.name[month]) %>% 
+  select(year,month, close) 
+snp
+ 
+unemp = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    jan:dec,
+    names_to = "month",
+    values_to = "unemp_perc"
+  ) %>% 
+  mutate(year = as.character(year)) %>% 
+  mutate(month = replace(month, month == "jan", "January")) %>% 
+  mutate(month = replace(month, month == "feb", "February")) %>% 
+  mutate(month = replace(month, month == "mar", "March")) %>% 
+  mutate(month = replace(month, month == "apr", "April")) %>%
+  mutate(month = replace(month, month == "may", "May")) %>% 
+  mutate(month = replace(month, month == "jun", "June")) %>% 
+  mutate(month = replace(month, month == "jul", "July")) %>% 
+  mutate(month= replace(month, month == "aug", "August")) %>% 
+  mutate(month = replace(month, month == "sep", "September")) %>% 
+  mutate(month = replace(month, month == "oct", "October")) %>% 
+  mutate(month = replace(month, month == "nov", "November")) %>% 
+  mutate(month = replace(month, month == "dec", "December")) 
+unemp
+```
+
+```{r}
+pols_mon_snp = right_join(pols_mon, snp)
+pols_mon_snp
+
+pols_mon_snp_unemp = right_join(pols_mon_snp, unemp)
+pols_mon_snp_unemp
+
+```
+
+```{r}
+summary(pols_mon)
+summary(snp)
+summary(unemp)
+summary(pols_mon_snp_unemp)
+```
+
+*pols_mon* dataset contains 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time: `year` & `month`(year and month of the count), `president`(the indicator of whether the president was democratic or republican), `gov_gop`(the number of republican governors on the associated date), `sen_gop`(the number of republican senators on the associated date), `rep_gop`(the number of republican representatives on the associated date), etc. 
+*snp* contains 787 observations of 3 variables related to Standard & Poor’s stock market index (S&P):`year` & `month`, `close`(the closing values of the S&P stock index on the associated date). The max closing value is 2107.39; the min is 17.05; and the mean is 474.89.
+*unemp* contains 816 observations of 3 variables:`year` & `month`, `unemp_perc`(percentage of unemployment in each month of the associated year). The max unemployment percentage is 10.80%; the min is 2.50%; and the mean is 5.83. 
+The resulting dataset *pols_mon_snp_unemp* contains 816 observations of 11 variables obtained from the former three tables combined together. The range of year is from 1969 to 2015. The key variables include `year` & `month`, `president`, `gov_gop`, `sen_gop`, `rep_gop`, `close`, and `unemp_perc`. The mean close value is 241.1 and the mean unemployment percentage is 5.83.  
 
 
 
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
 
 
 
