@@ -69,7 +69,7 @@ mr_trash_df =  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = 1) %>
   mutate(weight_tons = round(weight_tons, digit = 0)) %>% 
   mutate(weight_tons = as.integer(weight_tons)) %>% 
   mutate(id = "Mr.Trash Wheel") %>% 
-  select(id, dumpster:homes_powered)
+  select(id, everything())
 mr_trash_df
 
 prof_trash_df =  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = 2) %>% 
@@ -80,17 +80,18 @@ prof_trash_df =  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = 2) 
   mutate(weight_tons = round(weight_tons, digit = 0)) %>% 
   mutate(weight_tons = as.integer(weight_tons)) %>% 
   mutate(id = "Professor Trash Wheel") %>% 
-  select(id, dumpster:homes_powered)
+  select(id, everything())
 prof_trash_df
 ```
 
 ```{r}
-trash_df = left_join(mr_trash_df, prof_trash_df, by = c("year","month"))
+trash_df = bind_rows(mr_trash_df, prof_trash_df) 
 ```
 
 ```{r}
 summary(mr_trash_df) ## size of df: 486* 15
 summary(prof_trash_df) ## size of df: 82 * 14
+summary(trash_df) ## sizeof df: 568 * 15
 mr_trash_df[1,] ##Examples of an observation of the dataframe
 prof_trash_df[1,] ##Examples of an observation of the dataframe
 ```
@@ -108,7 +109,7 @@ mr_trash_df %>%
   sum() ## Calculate the total number of sports balls collected by Mr. Trash Wheel in 2020
 ```
 
-There are 486 observations in *mr_trash_df* dataset and 82 observations in *prof_trash_df* dataset Each table contains variables of dumpter number (`dumpster`), date of collection (`date`), amount of total litter(`weight_tons` & `volume_cubic_yards`) and different litter types (such as `plastic bottles`, `cigarette butts`, `sport balls`, and etc.) The *trash_df* combine and compare the dumpsters data of *mr_trash_df* and *prof_trash_df* that happened on the same date. The total weight of trash collected by Professor Trash Wheel was 166 tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was 856. 
+There are 486 observations in *mr_trash_df* dataset and 82 observations in *prof_trash_df* dataset Each table contains variables of dumpter number (`dumpster`), date of collection (`date`), amount of total litter(`weight_tons` & `volume_cubic_yards`) and different litter types (such as `plastic bottles`, `cigarette butts`, `sport balls`, and etc.) The *trash_df* combine the dumpsters data of *mr_trash_df* and *prof_trash_df* by `bind_rows`. The total weight of trash collected by Professor Trash Wheel was 166 tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was 856. 
 
 ## Problem 3
 ```{r}
