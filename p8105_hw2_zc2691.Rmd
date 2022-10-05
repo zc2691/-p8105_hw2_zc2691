@@ -1,5 +1,6 @@
 ---
 title: "p8105_hw2_zc2691"
+author: "Zhaohua Chunyu"
 output: github_document
 date: "2022-10-02"
 ---
@@ -60,22 +61,22 @@ subway_df %>%
 
 ## Probelm 2
 ```{r}
-mr_trash_df =  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 1) %>% 
+mr_trash_df =  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = 1) %>% 
   janitor::clean_names() %>% 
   select(dumpster:homes_powered) %>% 
   drop_na() %>% 
-  mutate(dumpster = as.character(dumpster)) %>% 
+  mutate(year = as.character(year)) %>% 
   mutate(weight_tons = round(weight_tons, digit = 0)) %>% 
   mutate(weight_tons = as.integer(weight_tons)) %>% 
   mutate(id = "Mr.Trash Wheel") %>% 
   select(id, dumpster:homes_powered)
 mr_trash_df
 
-prof_trash_df =  read_excel("data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", sheet = 2) %>% 
+prof_trash_df =  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = 2) %>% 
   janitor::clean_names() %>% 
   select(dumpster:homes_powered) %>% 
   drop_na() %>% 
-  mutate(dumpster = as.character(dumpster)) %>% 
+  mutate(year = as.character(year)) %>% 
   mutate(weight_tons = round(weight_tons, digit = 0)) %>% 
   mutate(weight_tons = as.integer(weight_tons)) %>% 
   mutate(id = "Professor Trash Wheel") %>% 
@@ -84,29 +85,30 @@ prof_trash_df
 ```
 
 ```{r}
-trash_df = full_join(mr_trash_df, prof_trash_df)
+trash_df = left_join(mr_trash_df, prof_trash_df, by = c("year","month"))
 ```
 
 ```{r}
-summary(mr_trash_df)
-summary(prof_trash_df)
-mr_trash_df[1,]
-prof_trash_df[1,]
+summary(mr_trash_df) ## size of df: 486* 15
+summary(prof_trash_df) ## size of df: 82 * 14
+mr_trash_df[1,] ##Examples of an observation of the dataframe
+prof_trash_df[1,] ##Examples of an observation of the dataframe
 ```
 
 ```{r}
 prof_trash_df %>% 
   select(weight_tons) %>% 
-  mutate(weight_tons_total = sum(weight_tons))
-  sum(prof_trash_df$weight_tons)
+  pull(weight_tons) %>% 
+  sum() ## Calculate the total weight of trash collected by Professor Trash Wheel
 
 mr_trash_df %>% 
   select(year, sports_balls) %>% 
-  filter(year == "2020") %>% 
-  mutate(sports_balls_2020_total = sum(sports_balls)) 
+  filter(year == "2020") %>%
+  pull(sports_balls) %>% 
+  sum() ## Calculate the total number of sports balls collected by Mr. Trash Wheel in 2020
 ```
 
-There are 453 observations in *mr_trash_df* dataset and 71 observations in *prof_trash_df* dataset Each table contains variables of dumpter number (`dumpster`), date of collection (`date`), amount of total litter(`weight_tons` & `volume_cubic_yards`) and different litter types (such as `plastic bottles`, `cigarette butts`, `sport balls`, and etc.) The total weight of trash collected by Professor Trash Wheel was 140 tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was 856. 
+There are 486 observations in *mr_trash_df* dataset and 82 observations in *prof_trash_df* dataset Each table contains variables of dumpter number (`dumpster`), date of collection (`date`), amount of total litter(`weight_tons` & `volume_cubic_yards`) and different litter types (such as `plastic bottles`, `cigarette butts`, `sport balls`, and etc.) The *trash_df* combine and compare the dumpsters data of *mr_trash_df* and *prof_trash_df* that happened on the same date. The total weight of trash collected by Professor Trash Wheel was 166 tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was 856. 
 
 ## Problem 3
 ```{r}
@@ -164,25 +166,27 @@ unemp
 ```
 
 ```{r}
-pols_mon_snp = right_join(pols_mon, snp)
+pols_mon_snp = left_join(pols_mon, snp, by = c("year", "month"))
 pols_mon_snp
 
-pols_mon_snp_unemp = right_join(pols_mon_snp, unemp)
+pols_mon_snp_unemp = left_join(pols_mon_snp, unemp, by = c("year", "month"))
 pols_mon_snp_unemp
-
 ```
 
 ```{r}
-summary(pols_mon)
-summary(snp)
-summary(unemp)
-summary(pols_mon_snp_unemp)
+summary(pols_mon) ## size of df: 822* 9
+summary(snp) ## size of df: 787 * 3
+summary(unemp) ## size of df: 816 * 3
+summary(pols_mon_snp_unemp) ## size of df: 822* 11
 ```
 
-*pols_mon* dataset contains 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time: `year` & `month`(year and month of the count), `president`(the indicator of whether the president was democratic or republican), `gov_gop`(the number of republican governors on the associated date), `sen_gop`(the number of republican senators on the associated date), `rep_gop`(the number of republican representatives on the associated date), etc. 
+*pols_mon* dataset contains 822 observations of 9 variables related to the number of national politicians who are democratic or republican at any given time: `year` & `month`(year and month of the count), `president`(the indicator of whether the president was democratic or republican), `gov_gop`(the number of republican governors on the associated date), `sen_gop`(the number of republican senators on the associated date), `rep_gop`(the number of republican representatives on the associated date), etc.
+
 *snp* contains 787 observations of 3 variables related to Standard & Poor’s stock market index (S&P):`year` & `month`, `close`(the closing values of the S&P stock index on the associated date). The max closing value is 2107.39; the min is 17.05; and the mean is 474.89.
+
 *unemp* contains 816 observations of 3 variables:`year` & `month`, `unemp_perc`(percentage of unemployment in each month of the associated year). The max unemployment percentage is 10.80%; the min is 2.50%; and the mean is 5.83. 
-The resulting dataset *pols_mon_snp_unemp* contains 816 observations of 11 variables obtained from the former three tables combined together. The range of year is from 1969 to 2015. The key variables include `year` & `month`, `president`, `gov_gop`, `sen_gop`, `rep_gop`, `close`, and `unemp_perc`. The mean close value is 241.1 and the mean unemployment percentage is 5.83.  
+
+The resulting dataset *pols_mon_snp_unemp* contains 816 observations of 11 variables obtained from the former three tables combined together. The range of year is from 1969 to 2015. The key variables include `year` & `month`, `president`, `gov_gop`, `sen_gop`, `rep_gop`, `close`, and `unemp_perc`. The mean close value is 241.1 and the mean unemployment percentage is 5.83. 
 
 
 
